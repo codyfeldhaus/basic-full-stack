@@ -59,3 +59,12 @@ WHERE last_name = 'Smith';
 SELECT *
 FROM users
 WHERE last_name = 'Smith' AND first_name IS NOT NULL; 
+
+--Command to create our registrations table
+--Columns: username and password as varchar and reg_time as TIMESTAMP
+CREATE TABLE registrations (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(20) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  reg_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

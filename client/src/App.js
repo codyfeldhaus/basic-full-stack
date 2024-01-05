@@ -10,6 +10,12 @@ function App() {
   //create state variables for searchTerm and results
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
+  //create state variables for storing user entered username and password
+  const [username, setUsername] = useState(''); 
+  const [password, setPassword] = useState('');
+  //create state variable to store auth token and logged in status
+  const [token, setToken] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //handler for onClick
   const handleSearch = async () => {
@@ -21,17 +27,70 @@ function App() {
     setResults(data)
   }
 
+  //handleLogin
+  const handleLogin = async () => {
+    //try logging in
+    try {
+      //send post request to /login route with the username and password in the body
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password }) //{username: _______, password: ________}
+      });
+      //check if fetch was successful 
+      if (response.ok) {
+        // const data = await response.json();
+        // setToken(data.token)
+
+        //extracting the token from the response and setting the token and isLoggedIn state variable
+        const { token } = await response.json();
+        setToken(token);
+        setIsLoggedIn(true);
+      } else {
+        alert("Login failed!");
+      }
+    } catch (error) {
+      alert('An error occurred while logging in.');
+    }
+  }
+
   return (
     <div>
       <h1>Basic Full Stack - Last Name DB Search</h1>
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      {/* onClick for button */}
-      <button onClick={handleSearch}>Search</button> 
+
+      {/* UI for log in form */}
+      <div>
+        <input
+          type='text'
+          placeholder='Username'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <input
+          type='text'
+          placeholder='Password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />      
+
+        <button onClick={handleLogin}>Log In</button>
+
+      </div>
+
+
+      <div>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {/* onClick for button */}
+        <button onClick={handleSearch}>Search</button> 
+      </div>
 
       <h2>Results</h2>
       <ul>
