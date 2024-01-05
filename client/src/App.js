@@ -17,6 +17,9 @@ function App() {
   const [token, setToken] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  //create state variable to keep track of whether or not user is trying to register
+  const [isRegistering, setIsRegistering] = useState(false);
+
   //handler for onClick
   const handleSearch = async () => {
     //use fetch to call server API to search DB for given last name
@@ -48,6 +51,7 @@ function App() {
         const { token } = await response.json();
         setToken(token);
         setIsLoggedIn(true);
+        alert("Login succeeded! Welcome back!");
       } else {
         alert("Login failed!");
       }
@@ -62,6 +66,8 @@ function App() {
 
 
       {/* UI for log in form */}
+
+      {!isLoggedIn ? (
       <div>
         <input
           type='text'
@@ -78,8 +84,11 @@ function App() {
         />      
 
         <button onClick={handleLogin}>Log In</button>
-
-      </div>
+      </div>) : (
+        <p>You are logged in!</p>
+      )}
+      
+      
 
 
       <div>
