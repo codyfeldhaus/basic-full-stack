@@ -26,22 +26,27 @@ const pool = new Pool({
 const authenticateToken = (req, res, next) => {
   //get the token from the authorization header
   const authHeader = req.headers['authorization'];
+
+  //store the token if present and 'null' if not, two options:
+  //option 1 - more code, but easier to understand
   // let token = null;
   // if (authHeader) {
   //   token = authHeader.split(' ')[1]; //"Bearer djahdskahjdsfhajsdkfhaksdfhakjdsfahk" -> ["Bearer", "kdasdjfaadsfd"]
   // }
 
+  //option 2 - uses ternary operator
   const token = authHeader ? authHeader.split(' ')[1] : null;
 
+  //2 more options just for fun:
   // const token = authHeader && authHeader.split(' ')[1];
-
   // const token = authHeader?.split(' ')[1];
 
 
   //if no token provided, return 401 Unauthorized
   if (!token) {
+    console.log("unauthorized A");
     res.status(401).send();
-    // res.sendStatus(401);
+    // res.sendStatus(401); //alternative to previous line
   }
 
   //verify the token
@@ -49,6 +54,7 @@ const authenticateToken = (req, res, next) => {
     //if verify fails
     if (err) {
       res.sendStatus(403) //if token not valid, send 403 Forbidden
+      //res.status(403).send(); //alternative to previous line
     }
     //store the user in a property called user in the request object
     req.user = user;
@@ -64,10 +70,13 @@ app.get('/search', authenticateToken, async (req, res) => {
   try {
     const searchQuery = req.query.q.toLowerCase(); //eg: /search?q=Smith
     const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(last_name) = $1', [`${searchQuery}`]);
-    //const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(last_name) = $1', ['smith']);
-    //const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(last_name) = 'smith');  
+    //const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(last_name) = $1', ['smith']); //using Smith as example
+    //const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(last_name) = 'smith');  //using Smith as example
+    
+    //send back the resulting rows as json in the response
     res.json(rows);
   } catch (error) {
+    //send 500 error if query fails
     res.status(500).send(error);
   }
 });
